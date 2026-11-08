@@ -1,0 +1,18 @@
+{
+  "tools": [
+    {
+      "name": "charge_card",
+      "dedupe": "key",
+      "window_seconds": 86400,
+      "replay_inside_window": true
+    },
+    {
+      "name": "webhook_delivery",
+      "dedupe": "payload"
+    },
+    {
+      "name": "write_local_report",
+      "dedupe": "none"
+    }
+  ]
+}
