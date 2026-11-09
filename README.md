@@ -1,7 +1,11 @@
-# idem-replay
+# idempotent-replay
 
-Decide whether an interrupted effectful call may be **resent**, or whether it needs a
-human, from the dedupe behaviour the tool's provider actually has.
+**Did my webhook already fire, and is it safe to resend?** A call was interrupted between the
+send and the receipt, and your own ledger cannot tell you whether the effect happened. This
+answers that question from the dedupe behaviour your provider actually has, instead of
+guessing.
+
+[![tests](https://github.com/how2how2how2-arch/idempotent-replay/actions/workflows/tests.yml/badge.svg)](https://github.com/how2how2how2-arch/idempotent-replay/actions/workflows/tests.yml)
 
 A ledger records a key before a call and the receipt after it. The interesting state is the
 one in between: the process died, the row says `pending`, and nobody knows whether the email

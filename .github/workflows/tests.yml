@@ -1,0 +1,39 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Two separate assertions, because they can disagree:
+      #   * the count, so a suite that silently shrank to 20 cells cannot pass;
+      #   * the verdict line, because "Ran 25 tests" is printed for a FAILED run
+      #     too, and without `pipefail` the pipeline's status is tee's, not
+      #     unittest's -- a red suite would have read as green here.
+      - name: run the 25 tests
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -v 2>&1 | tee /tmp/suite.log
+          grep -qE '^Ran 25 tests' /tmp/suite.log
+          grep -qE '^OK' /tmp/suite.log
+
+      # A passing suite is only evidence if it fails when the table is wrong.
+      # The plant rewrites one line, requires exactly the dependent cells to
+      # fail, and restores the file; it exits non-zero if a plant stops biting.
+      - name: prove the tests bite
+        run: python tools/plant.py
